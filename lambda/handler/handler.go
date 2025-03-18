@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 
 	"lambda/internal/discord"
 	"lambda/internal/weather"
@@ -14,23 +15,33 @@ import (
 )
 
 func SendRainAlert(discordWebhookURL string) error {
+	var wg sync.WaitGroup
+
 	for city := range weather.CityIDMap {
-		weatherInfo, err := weather.GetWeather(city)
-		if err != nil {
-			log.Printf("都市 %s の天気取得エラー: %v\n", city, err)
-			continue
-		}
-		if len(weatherInfo.Forecasts) == 0 {
-			log.Printf("都市 %s の予報データがありません\n", city)
-			continue
-		}
-		todayTelop := weatherInfo.Forecasts[0].Telop
-		if strings.Contains(todayTelop, "雨") {
-			if err := discord.SendDiscordMessage(discordWebhookURL, city, weatherInfo); err != nil {
-				log.Printf("都市 %s のDiscord送信エラー: %v\n", city, err)
+		wg.Add(1)
+		go func(city string) {
+			defer wg.Done()
+
+			weatherInfo, err := weather.GetWeather(city)
+			if err != nil {
+				log.Printf("都市 %s の天気取得エラー: %v\n", city, err)
+				return
 			}
-		}
+			if len(weatherInfo.Forecasts) == 0 {
+				log.Printf("都市 %s の予報データがありません\n", city)
+				return
+			}
+			todayTelop := weatherInfo.Forecasts[0].Telop
+			if strings.Contains(todayTelop, "雨") {
+				if err := discord.SendDiscordMessage(discordWebhookURL, city, weatherInfo); err != nil {
+					log.Printf("都市 %s のDiscord送信エラー: %v\n", city, err)
+				}
+			}
+		}(city)
 	}
+
+	wg.Wait()
+
 	return nil
 }
 
