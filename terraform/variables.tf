@@ -3,3 +3,9 @@ variable "discord_webhook_url" {
   description = "Discord webhook URL"
   sensitive = true
 }
+
+variable "region" {
+  type = string
+  description = "AWS region"
+  default = "ap-northeast-1"
+}
