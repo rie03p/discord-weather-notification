@@ -23,7 +23,7 @@ terraform init
 terraform plan -var-file="terraform.tfvars"
 
 read -p "上記の差分を確認しました。適用しますか？ (y/N): " confirm
-if [[ "$confirm" =~ ^[Yy]$ ]]; then
+if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
     terraform apply -auto-approve -var-file="terraform.tfvars"
     echo "deploy complete."
 else
