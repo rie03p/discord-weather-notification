@@ -64,7 +64,7 @@ func SendDiscordMessage(webhookURL, city string, weatherInfo *weather.WeatherRes
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusNoContent && resp.StatusCode != http.StatusOK {
 		body, _ := ioutil.ReadAll(resp.Body)
-		return fmt.Errorf("discord webhookエラー: ステータス %d, レスポンス: %s", resp.StatusCode, string(body))
+		return fmt.Errorf("discord send failed: %s", string(body))
 	}
 	return nil
 }

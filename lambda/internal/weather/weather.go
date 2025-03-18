@@ -52,7 +52,7 @@ func GetWeather(city string) (*WeatherResponse, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%d", resp.StatusCode)
+		return nil, fmt.Errorf("HTTP error: %s %d", resp.Status, resp.StatusCode)
 	}
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
