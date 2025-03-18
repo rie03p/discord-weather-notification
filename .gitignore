@@ -24,6 +24,8 @@ go.work
 # Binary files
 bin/
 dist/
+bootstrap
+function.zip
 
 # IDE and editor files
 .idea/
